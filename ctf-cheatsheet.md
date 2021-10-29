@@ -1678,4 +1678,13 @@ alt + alt
 # wpscan enable all options 
 wpscan --url HERE --enumerate ap,at,cb,dbe
 
-
+# Installing burp cert via command line - To install Burp's CA certificate in Firefox, proceed as follows:
+1. With Burp running, visit http://burpsuite in Firefox. You should be taken to a page that says "Welcome to Burp Suite Professional"
+2. In the top-right corner of the page, click CA Certificate to download your unique Burp CA certificate
+3. Download and save cert as burp.der
+4. run -> openssl x509 -in burp.der -inform DER -out burp.crt 
+5. run -> cp -r burp.crt  /usr/local/share/ca-certificates/burp.crt 
+6. run -> update-ca-certificates
+7. run -> export http_proxy="http://127.0.0.1:8080"
+8. run -> export https_proxy="http://127.0.0.1:8080"
+9. now we can intercept proxy via cmd line using curl 
